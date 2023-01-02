@@ -1,14 +1,18 @@
 // variables
 const showModalBtn = document.querySelector('#btnShow');
-const modal = document.querySelector('.modal')
-const closeModalBtn = document.querySelector('#btnClose');
+const modal = document.querySelector('.modal');
+const closeModalBtn = modal.querySelector('#btnClose');
 const modalWindow = modal.querySelector('.modal__window');
 const overlay = modal.querySelector('.overlay');
 const form = modal.querySelector('.modal__form');
 const inputName = modal.querySelector('input[type="text"]');
 const inputPassword = modal.querySelector('input[type="password"]');
-const inputFormGroup = modal.querySelector('.form-group');
-const passwordFormGroup = modal.querySelectorAll('.form-group')[1];
+const submitBtn = modal.querySelector('button');
+
+const numberRegexp = /^([^0-9]*)$/;
+const passwordRegexp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{7,}$/;
+
+submitBtn.setAttribute('disabled', true)
 
 // functions
 function openModal() {
@@ -27,7 +31,45 @@ function closeModal() {
   setTimeout(function() {
    modal.style.display = 'none';
   }, 500);
-  form.reset();  
+  form.reset();
+  hideAllErrors();
+}
+
+function showError(text, context) {
+  context.parentElement.classList.add('has-error')
+  context.parentElement.childNodes[3].textContent = text;
+  setTimeout(function() {
+    context.parentElement.childNodes[3].classList.add('animate__headShake');
+  }, 500);
+}
+
+function hideError(context) {
+  context.parentElement.classList.remove('has-error');
+  context.parentElement.childNodes[3].textContent = '';
+  context.parentElement.childNodes[3].classList.remove('animate__headShake');
+}
+
+function hideAllErrors() {
+  let formGroups = modal.querySelectorAll('.form-group');
+  formGroups.forEach(function(formGroup) {
+    formGroup.classList.remove('has-error');
+    formGroup.childNodes[3].classList.remove('animate__headShake');
+  })
+}
+
+function isNameAndPasswordValid(name, password) {
+  return name.length && name.length >= 3 && numberRegexp.test(name) && password.length && password.length >= 7 && passwordRegexp.test(password);
+}
+
+function checkValidation() {
+  const name = inputName.value.trim();
+  const password = inputPassword.value.trim();
+  
+  if (isNameAndPasswordValid(name, password)) {
+    submitBtn.removeAttribute('disabled');
+  } else {
+    submitBtn.setAttribute('disabled', true);
+  }
 }
 
 // EventListeners
@@ -61,22 +103,34 @@ form.addEventListener('submit', function(event) {
   closeModal();
 });
 
+inputName.addEventListener('input', function() {
+  hideError(this);
+  
+  checkValidation();
+})
+
+inputPassword.addEventListener('input', function() {
+  hideError(this);
+  checkValidation();
+})
+
 inputName.addEventListener('blur', function() {
-  if(!this.value.length) {
-    inputFormGroup.classList.add('has-error')
-    inputFormGroup.childNodes[3].textContent = '"Name" field is required!';
-  } else {
-      inputFormGroup.classList.remove('has-error')
-      inputFormGroup.childNodes[3].textContent = '';
+  if (!this.value.trim().length) {
+    showError('"Name" field is required!', this)
+  } else if (this.value.trim().length < 3) {
+    showError('the "name" field must be at least 3 characters long!', this);
+  } else if (!numberRegexp.test(this.value.trim())) {
+    showError('the "name" field must not include numbers!', this);
   }
 })
 
 inputPassword.addEventListener('blur', function() {
-  if(!this.value.length) {
-    passwordFormGroup.classList.add('has-error')
-    passwordFormGroup.childNodes[3].textContent = '"password" field is required!';
-  } else {
-      passwordFormGroup.classList.remove('has-error')
-      passwordFormGroup.childNodes[3].textContent = '';
+  if (!this.value.trim().length) {
+    showError('"password" field is required!', this);
+  } else if (this.value.trim().length < 7) {
+    showError('the "password" field must be at least 7 characters long!', this);
+  } else if (!passwordRegexp.test(this.value.trim())) {
+    showError('the password must consist of uppercase and lowercase letters, have numbers and symbols in it', this);
   }
 })
+
