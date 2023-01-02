@@ -2,12 +2,15 @@ body {
     margin: 0;
     padding: 0;
   }
+  
   h1, h2, h3 {
     margin: 0;
   }
+  
   main {
     padding: 15px;
   }
+  
   .modal {  
     display: none;
     position: absolute;
@@ -19,13 +22,15 @@ body {
     opacity: 0;
     transition: opacity 0.5s ease;
   }
+  
   .overlay {
     height: 100vh;
     min-height: 500px;
     background: rgba(0,0,0,0.3);
     position: relative;
   }
-  .modal-window {  
+  
+  .modal__window {  
     position: absolute;
     left: calc(50%-200px);
     top: 40px;  
@@ -34,17 +39,47 @@ body {
     border-radius: 10px;  
     padding: 15px;
   }
+  
   .modal__form {
     display: flex;
     flex-direction: column;
   }
-  .modal__form input {
-    margin-bottom: 10px;
-  }
+  
   #btnClose {
     position: absolute;
     top: 10px;
     right: 15px;  
     text-decoration: none;
     color: #000;
+  }
+  
+  .form-group {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    min-width: 100%;  
+  }
+  
+  .form-group input {
+    outline: none;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    transition: border 0.5s ease;
+  }
+  
+  .form-group .error{
+    height: 0px;
+    margin: 0;
+    font-size: 0px;
+    color: #b10101;
+    transition: all 0.5s ease;
+  }
+  
+  .form-group.has-error .error {
+    height: 14px;
+    font-size: 13px;  
+  }
+  
+  .form-group.has-error input {
+    border: 1px solid #b10101;
   }
